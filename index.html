@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body {
+    display: flex;
+    justify-content: space-between;
+    height: 100vh;
+    margin: 0;
+    padding: 20px;
+  }
+
+  .viewer {
+    width: 30%;
+    border: 2px solid #000;
+    padding: 10px;
+    overflow: auto;
+  }
+
+  .gallery {
+    width: 30%;
+    border: 2px solid #000;
+    padding: 10px;
+    overflow: auto;
+  }
+
+  .code {
+    width: 30%;
+    border: 2px solid #000;
+    padding: 10px;
+    overflow: auto;
+  }
+
+  .image {
+    width: 400px;
+    height: 200px;
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .image textarea {
+    width: 90%;
+    height: 90%;
+    border: none;
+    resize: none;
+  }
+</style>
+</head>
+<body>
+  <div class="viewer" id="viewer">
+    Drop images here...
+  </div>
+  <div class="gallery" id="gallery">
+    <div class="image" draggable="true" data-code="&lt;!DOCTYPE html&gt;&#13;&lt;html&gt;&#13;&lt;body&gt;">
+      <textarea>&lt;!DOCTYPE html&gt;&#13;&lt;html&gt;&#13;&lt;body&gt;</textarea>
+    </div>
+    <div class="image" draggable="true" data-code="&lt;h2&gt;An unordered HTML list&lt;/h2&gt;">
+      <textarea>&lt;h2&gt;An unordered HTML list&lt;/h2&gt;</textarea>
+    </div>
+    <div class="image" draggable="true" data-code="&lt;ul&gt;&#13;  &lt;li&gt;Coffee&lt;/li&gt;&#13;  &lt;li&gt;Tea&lt;/li&gt;&#13;  &lt;li&gt;Milk&lt;/li&gt;&#13;&lt;/ul&gt;">
+      <textarea>&lt;ul&gt;&#13;  &lt;li&gt;Coffee&lt;/li&gt;&#13;  &lt;li&gt;Tea&lt;/li&gt;&#13;  &lt;li&gt;Milk&lt;/li&gt;&#13;&lt;/ul&gt;</textarea>
+    </div>
+    <div class="image" draggable="true" data-code="&lt;/body&gt;&#13;&lt;/html&gt;">
+      <textarea>&lt;/body&gt;&#13;&lt;/html&gt;</textarea>
+    </div>
+  </div>
+  <div class="code" id="code">
+    Code will appear here...
+  </div>
+
+<script>
+  const viewer = document.getElementById('viewer');
+  const gallery = document.getElementById('gallery');
+  const code = document.getElementById('code');
+
+  viewer.addEventListener('dragover', (e) => {
+    e.preventDefault();
+  });
+
+  viewer.addEventListener('drop', (e) => {
+    e.preventDefault();
+    const codeFragment = e.dataTransfer.getData('text/plain');
+    if (codeFragment) {
+      const codeElement = document.createElement('pre');
+      codeElement.textContent = codeFragment;
+      viewer.appendChild(codeElement);
+      updateCode();
+    }
+  });
+
+  gallery.addEventListener('dragstart', (e) => {
+    e.dataTransfer.setData('text/plain', e.target.getAttribute('data-code'));
+  });
+
+  viewer.addEventListener('click', (e) => {
+    if (e.target.tagName === 'PRE') {
+      e.target.remove();
+      updateCode();
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Delete' && viewer.contains(document.activeElement)) {
+      const selectedElement = document.activeElement;
+      if (selectedElement.tagName === 'PRE') {
+        selectedElement.remove();
+        updateCode();
+      }
+    }
+  });
+
+  function updateCode() {
+    const codeElements = viewer.querySelectorAll('pre');
+    let codeContent = '';
+    codeElements.forEach((element) => {
+      codeContent += element.textContent + '\n';
+    });
+    code.textContent = codeContent;
+  }
+</script>
+</body>
+</html>
